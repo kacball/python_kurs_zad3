@@ -1,12 +1,15 @@
-# Przykład użycia: python3 moj_skrypt.py -m styczeń luty -d pn-wt pt -p r w
+# Przykład użycia: python3 moj_skrypt.py -m styczen luty -d pn-wt pt -p r w
 import argparse
 import ast
+import os
 # Miesiące w języku polskim
-MONTHS = ["styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec", 
-          "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień"]
+MONTHS = ["styczen", "luty", "marzec", "kwiecien", "maj", "czerwiec", 
+          "lipiec", "sierpien", "wrzesien", "pazdziernik", "listopad", "grudzien"]
 
 # Dni tygodnia
-DAYS = ["pn", "wt", "śr", "czw", "pt", "sb", "nd"]
+DAYS = ["pn", "wt", "sr", "czw", "pt", "sb", "nd"]
+
+days_list = ['poniedzialek', 'wtorek', 'sroda', 'czwartek', 'piatek', 'sobota', 'niedziela']
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--months', nargs='+', choices=MONTHS, required=True,
@@ -27,3 +30,65 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
+months = args.months
+days = args.days
+what_time = args.times
+read_or_write = args.tryb
+if args.csv == "0":
+    file_type = "json"
+else:
+    file_type = "csv"
+
+times_index = 0
+for i in range(len(months)):
+    starting_day, ending_day = 0, 0
+    if '-' in days[i]:
+        period = days[i].split('-')
+        starting_day = DAYS.index(period[0])
+        ending_day = DAYS.index(period[1])
+    else:
+        starting_day = DAYS.index(days[i])
+        ending_day = starting_day
+    
+    for j in range(starting_day, ending_day + 1):
+        if times_index >= len(what_time):
+            when = "rano"
+        elif what_time[times_index] == "r":
+            when = "rano"
+        else:
+            when = "wieczorem"
+        
+        # DEBUG LINE
+        print(f"{months[i]} {days_list[j]} {when} {read_or_write} {file_type}")
+
+        # Tworzenie ścieżki do pliku
+        path = os.path.join(os.getcwd(), months[i], days_list[j], when)
+        
+        times_index +=1
+        if not os.path.exists(path):
+            os.makedirs(path, exist_ok=True)
+
+        if file_type == "csv":
+            file_path = os.path.join(path, "Dane.csv")
+            # Tworzenie pustych plików csv lub json jesli nie istnieja
+            if not os.path.exists(file_path):
+                with open(file_path, "w", encoding='utf-8') as f:
+                    pass
+            if read_or_write == "w":
+                #TODO: zapis do pliku csv
+                pass
+            else:
+                #TODO odczyt z pliku csv
+                pass
+        else:
+            file_path = os.path.join(path, "Dane.json")
+            # Tworzenie pustych plików csv lub json jesli nie istnieja
+            if not os.path.exists(file_path):
+                with open(file_path, "w", encoding='utf-8') as f:
+                    pass
+            if read_or_write == "w":
+                #TODO: zapis do pliku json
+                pass
+            else:
+                #TODO odczyt z pliku json
+                pass
