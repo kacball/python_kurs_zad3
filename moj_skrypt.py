@@ -1,3 +1,4 @@
+# Autorzy: Kacper Bal, Daniel Bernatowicz, Mateusz Mroczka, (??? dodaj się proszę :)
 # Przykład użycia: python3 moj_skrypt.py -m styczen luty -d pn-wt pt -p r w
 import argparse
 import ast
@@ -63,7 +64,7 @@ for i in range(len(months)):
 
         # Tworzenie ścieżki do pliku
         path = os.path.join(os.getcwd(), months[i], days_list[j], when)
-        
+
         times_index +=1
         if not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
