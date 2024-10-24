@@ -1,10 +1,11 @@
-# Autorzy: Kacper Bal, Daniel Bernatowicz, Mateusz Mroczka, (??? dodaj się proszę :)
+# Autorzy: Kacper Bal, Daniel Bernatowicz, Mateusz Mroczka, Kacper Omieliańczyk
 # Przykład użycia: python3 moj_skrypt.py -m styczen luty -d pn-wt pt -p r w
 import argparse
 import ast
 import os
 import random
 import csv
+import json
 
 def generate_random_data():
     model = random.choice(["A", "B", "C"])
@@ -29,6 +30,19 @@ def read_csv(file_path):
         for row in reader_csv:
             if row['Model'] == 'A':
                 time_sum += int(row['Czas'][:-1])
+
+def write_to_json(file_path, data):
+    keys = ['Model', 'Wynik', 'Czas']
+    d = dict(zip(keys, data))
+    with open(file_path, 'w') as f:
+        json.dump(d, f)
+
+def read_json(file_path):
+    global time_sum
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+        if 'Model' in data.keys() and data['Model'] == 'A' and 'Czas' in data.keys():
+                time_sum += int(data['Czas'][:-1])
 
 # Miesiące w języku polskim
 MONTHS = ["styczen", "luty", "marzec", "kwiecien", "maj", "czerwiec", 
@@ -114,11 +128,9 @@ for i in range(len(months)):
                 with open(file_path, "w", encoding='utf-8') as f:
                     pass
             if read_or_write == "t":
-                #TODO: zapis do pliku json
-                pass
+                write_to_json(file_path, generate_random_data())
             else:
-                #TODO odczyt z pliku json
-                pass
+                read_json(file_path)
 
 if read_or_write != 't':
     print(f"Łączny czas w plikach, gdzie Model == 'A': {time_sum}")
