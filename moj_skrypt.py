@@ -3,6 +3,33 @@
 import argparse
 import ast
 import os
+import random
+import csv
+
+def generate_random_data():
+    model = random.choice(["A", "B", "C"])
+    wynik = random.randint(0, 1000)
+    czas = f"{random.randint(0, 1000)}s"
+    return [model, wynik, czas]
+
+def write_to_csv(file_path, data):
+    header = ['Model', 'Wynik', 'Czas']
+
+    with open(file_path, "w", newline='', encoding='utf-8') as f:
+        writer = csv.writer(f, delimiter=';')
+        writer.writerow(header)
+        writer.writerow(data)
+
+time_sum = 0
+
+def read_csv(file_path):
+    global time_sum
+    with open(file_path, "r", newline='', encoding='utf-8') as f:
+        reader_csv = csv.DictReader(f, delimiter=';')
+        for row in reader_csv:
+            if row['Model'] == 'A':
+                time_sum += int(row['Czas'][:-1])
+
 # Miesiące w języku polskim
 MONTHS = ["styczen", "luty", "marzec", "kwiecien", "maj", "czerwiec", 
           "lipiec", "sierpien", "wrzesien", "pazdziernik", "listopad", "grudzien"]
@@ -75,21 +102,23 @@ for i in range(len(months)):
             if not os.path.exists(file_path):
                 with open(file_path, "w", encoding='utf-8') as f:
                     pass
-            if read_or_write == "w":
-                #TODO: zapis do pliku csv
-                pass
+            if read_or_write == "t":
+                write_to_csv(file_path, generate_random_data())
             else:
-                #TODO odczyt z pliku csv
-                pass
+                read_csv(file_path)
+                
         else:
             file_path = os.path.join(path, "Dane.json")
             # Tworzenie pustych plików csv lub json jesli nie istnieja
             if not os.path.exists(file_path):
                 with open(file_path, "w", encoding='utf-8') as f:
                     pass
-            if read_or_write == "w":
+            if read_or_write == "t":
                 #TODO: zapis do pliku json
                 pass
             else:
                 #TODO odczyt z pliku json
                 pass
+
+if read_or_write != 't':
+    print(f"Łączny czas w plikach, gdzie Model == 'A': {time_sum}")
